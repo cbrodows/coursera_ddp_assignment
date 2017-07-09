@@ -12,3 +12,9 @@ This is a plotting tool that can be used to display air quality data for the cit
 ## Usage
 
 Use the pull-down menus for "Start Date" and "End Date" to select the time interval over which you want to plot the data and then another pull-down menu to choose the physical quantity.  Once everything is done, click the "Proceed" checkbox to render the plot.  
+
+The app can be found on shinyapps.io at:
+https://cbrodows.shinyapps.io/shinyApp AND at
+https://cbrodows.shinyapps.io/AirQualityPlottingApp
+
+The github code can be found in the current directory.
