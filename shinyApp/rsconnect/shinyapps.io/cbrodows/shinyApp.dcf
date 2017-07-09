@@ -1,0 +1,11 @@
+name: shinyApp
+title: shinyApp
+account: cbrodows
+server: shinyapps.io
+appId: 195371
+bundleId: 897334
+url: https://cbrodows.shinyapps.io/shinyApp/
+when: 1499627646.07002
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: ShinyApplication1.Rmd|ShinyAppPresentation.md|ShinyAppPresentation.Rpres

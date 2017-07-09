@@ -1,0 +1,133 @@
+---
+title: "AirQualityPlottingApp"
+author: "Christopher Brodowski"
+date: "July 8, 2017"
+output:
+  ioslides_presentation:
+    fig_width: 1
+    fig_height: 1
+    fig_retina: 1
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Air Quality Data Plotter
+
+This program will allow the user to display time series plots of daily air quality measurements in New York, from May to September of 1973.
+
+- Ozone (ppb)
+- Temperature (degrees F)
+- Wind Speed (mph)
+- Solar Radiation (lang)
+
+NOTE: Plots displayed in presentation have less detail than in the actual application.
+
+## Sample Of Usage
+```{r include=FALSE, cache=FALSE}
+library(datasets)
+library(plotly)
+require(data.table)
+library(dplyr)
+library(DT)
+```
+```{r echo=FALSE}
+localAQ = airquality
+# Add a new time field
+timeVect <- vector('character', length=0)
+for (i in 1:nrow(localAQ)) {
+	strr <- sprintf("%02d/%02d/73", localAQ$Month[i], localAQ$Day[i])
+	timeVect <- c(timeVect, strr)
+}
+localAQ$Time <- as.Date(timeVect, format="%m/%d/%y")
+inputPanel(
+  selectInput("StartTime", "Start Date", 
+				choices=seq(as.Date("1973-05-01"), as.Date("1973-09-29"), "days")),
+	selectInput("EndTime", "End Date",
+				choices=seq(as.Date("1973-05-01"), as.Date("1973-09-29"), "days")),
+	selectInput("PlottingVariable", "What Variable to Plot?",
+				choices=c("Ozone", "Solar.R", "Temp", "Wind")),
+  checkboxInput("Proceed", "Proceed?")
+)
+renderPlot({
+  if (input$Proceed) {
+  		# Get the right time
+    #print("entering plotter")
+  		if (input$StartTime < input$EndTime) {
+  			first <- input$StartTime
+  			second <- input$EndTime
+  		} else {
+  			first <- input$EndTime
+  			second <- input$StartTime
+  		}
+  		subsettedData <- subset(localAQ, Time >= first & Time <= second)
+  		
+  		# TODO: Remove missing data?
+  		outputVar <- input$PlottingVariable
+  		x <- list(title="Date", titlefont=list(family="Courier New", 
+  		                                       size=16))
+  		y <- list(title=outputVar, titlefont=list(family="Courier New", 
+  		                                          size=16))
+  		#dev.off();
+  		#dev.new(width=3, height=2)
+  		#windows(record=TRUE, width=3, height=2)
+  		if (input$PlottingVariable == "Ozone") {
+  		  #print("trying to plot")
+  		  plot(subsettedData$Time, subsettedData$Ozone, type="b",
+  		       ylab=outputVar, main=input$PlottingVariable)
+  		  #plot_ly(subsettedData, x = ~Time, y = ~Ozone, type="scatter",
+  		  #        mode="lines") %>% layout(xaxis=x, yaxis=y)  
+  		} else if (input$PlottingVariable == "Temp") {
+  		  plot(subsettedData$Time, subsettedData$Temp, type="b",
+  		       ylab=outputVar, main=input$PlottingVariable)
+  		  #plot_ly(subsettedData, x = ~Time, y = ~Temp, type="scatter",
+  		  #        mode="lines") %>% layout(xaxis=x, yaxis=y)  
+  		} else if (input$PlottingVariable == "Solar.R") {
+  		  plot(subsettedData$Time, subsettedData$Solar.R, type="b",
+  		       ylab=outputVar, main=input$PlottingVariable)
+  		  #plot_ly(subsettedData, x = ~Time, y = ~Solar.R, type="scatter",
+  		  #        mode="lines") %>% layout(xaxis=x, yaxis=y)  
+  		} else if (input$PlottingVariable == "Wind") {
+  		  plot(subsettedData$Time, subsettedData$Wind, type="b",
+  		       ylab=outputVar, main=input$PlottingVariable)
+  		  #plot_ly(subsettedData, x = ~Time, y = ~Wind, type="scatter",
+  		  #        mode="lines") %>% layout(xaxis=x, yaxis=y)  
+  		}
+	  }
+})
+
+
+# inputPanel(
+#   selectInput("n_breaks", label = "Number of bins:",
+#               choices = c(10, 20, 35, 50), selected = 20),
+#   
+#   sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+#               min = 0.2, max = 2, value = 1, step = 0.2)
+#   
+# )
+# 
+# renderPlot({
+#   hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
+#        xlab = "Duration (minutes)", main = "Geyser eruption duration")
+#   
+#   dens <- density(faithful$eruptions, adjust = input$bw_adjust)
+#   lines(dens, col = "blue")
+# })
+```
+
+## Dataset info
+```{r}
+colnames(localAQ)
+head(localAQ)
+```
+
+## To See More...
+
+Go to https://cbrodows.shinyapps.io/shinyApp/ to see the full app in action.
+
+My ui.R and server.R code can be found at:
+https://github.com/cbrodows/coursera_ddp_asignment
+
+
